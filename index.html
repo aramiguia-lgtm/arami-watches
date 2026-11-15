@@ -267,6 +267,7 @@ s.was{color:var(--muted);font-size:.75em;margin-left:6px}
       </form>
     </section>
     <div class="contact"><span data-t="contact"></span><b>305 452 3548</b></div>
+    <a class="adminlink" href="https://claude.ai/artifact/Qz1GNqNUH1xXABBakM2e99#admin" target="_blank" rel="noopener">Administrar</a>
   </div>
 
   <div class="view" id="quoteView" hidden="">
@@ -552,6 +553,7 @@ function tryPin(){ var v=$("pinIn").value.trim(), m=$("pinMsg");
   if(v===SET.pin) unlock(); else m.textContent="Clave incorrecta." }
 function unlock(){ ss.set("arami-unlocked","1"); $("pinBox").hidden=true; $("ownerBar").hidden=false; $("adminLink").hidden=true; setTab(ss.get("arami-tab")||"admin") }
 function lock(){ ss.set("arami-unlocked",""); ss.set("arami-tab","vitrina"); $("ownerBar").hidden=true; $("adminLink").hidden=false; setTab("vitrina") }
+if(location.hash==="#admin"&&ss.get("arami-unlocked")!=="1"){ preparePin(); $("pinBox").hidden=false }
 if(!window.claude || !window.claude.use) return;
 var DEF_TIERS=[{id:"nuevo",name:"Cliente nuevo",pct:90},{id:"regular",name:"Regular",pct:130},{id:"completo",name:"Precio completo",pct:160},{id:"revende",name:"Revendedor",pct:50}];
 var db=null, art=null, COSTS={models:{},extras:{}}, SET={tiers:DEF_TIERS,sign:"ARAMI · 305 452 3548",box:1}, QUOTES=[], TAB="vitrina";
