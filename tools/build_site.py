@@ -6,9 +6,10 @@ body=s.split('<body>',1)[1].rsplit('</body>',1)[0]
 body=re.sub(r'<title>.*?</title>\s*','',body,count=1,flags=re.S)
 body=body.replace('<meta name="claude:viewport-fit-sides" content="cover">\n','',1)
 n=body.count('<button type="button" class="adminlink" id="adminLink">Administrar</button>'); assert n==1
-body=body.replace('<button type="button" class="adminlink" id="adminLink">Administrar</button>','<a class="adminlink" href="https://claude.ai/artifact/Qz1GNqNUH1xXABBakM2e99#admin" target="_blank" rel="noopener">Administrar</a>',1)
-# guard: admin link removed, so make its handler safe
-body=body.replace('$("adminLink").onclick=','if($("adminLink"))$("adminLink").onclick=',1)
+import os
+shim=open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'admin-shim.js')).read()
+assert body.count('<script id="appjs">')>=1  # first one is the real tag; later ones are text inside pageHTML()
+body=body.replace('<script id="appjs">','<script id="shim">'+shim+'</script>\n<script id="appjs">',1)
 head='''<!doctype html>
 <html lang="es"><head>
 <meta charset="utf-8">
