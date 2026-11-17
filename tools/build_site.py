@@ -47,4 +47,11 @@ document.addEventListener("click",function(e){ if(!window.gtag||!e.target.closes
 </body></html>
 '''
 assert 'priv/costs' in body  # owner code present but inert without claude runtime
+# La web es ahora la fuente del catálogo: conservar el catálogo publicado (editado desde Administrar en aramiwatches.com)
+import os as _os
+_C='<script type="application/json" id="catalog">'
+if '--keep-site-catalog' in sys.argv and _os.path.exists(out+'/index.html'):
+    cur=open(out+'/index.html').read(); a=cur.index(_C)+len(_C); b=cur.index('</script>',a)
+    x=body.index(_C)+len(_C); y=body.index('</script>',x)
+    body=body[:x]+cur[a:b]+body[y:]
 open(out+'/index.html','w').write(head+body+tail)
