@@ -1056,7 +1056,7 @@ function renderP(keep){ var l=$("pList"); if(!l) return;
       var pub=d.querySelector(".ppub"), a=d.querySelector("a.btn");
       var upd=function(){ pub.className="ppub wide"+(+p.cost>0?"":" off"); pub.textContent=+p.cost>0?"Suma al precio del cliente: "+money(pPrice(p))+" · ganas "+money(pPrice(p)-p.cost):"Sin costo: esta pieza no sale en la tienda.";
         a.hidden=!p.link; if(p.link) a.href=p.link; pSummary() };
-      var on=function(id,fn){ $(id).oninput=function(){ fn($(id).value); PDIRTY=true; upd() } };
+      var on=function(id,fn){ var el=d.querySelector("#"+id); el.oninput=function(){ fn(el.value); PDIRTY=true; upd() } };
       on("pes-"+i,function(v){p.es=v}); on("pen-"+i,function(v){p.en=v}); on("pc-"+i,function(v){p.cost=parseFloat(v)||0}); on("pp-"+i,function(v){p.pct=parseFloat(v)||0});
       on("pl-"+i,function(v){p.link=v.trim()}); on("po-"+i,function(v){p.opts=v.split(",").map(function(z){return z.trim()}).filter(Boolean)});
       d.querySelector("select").onchange=function(e){ p.cat=e.target.value; PDIRTY=true; renderP(true) };
