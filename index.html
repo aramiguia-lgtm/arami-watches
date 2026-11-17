@@ -510,7 +510,7 @@ Crystal: Sapphire"></textarea></div>
    En el teléfono de un cliente no hay clave guardada: no se carga nada de esto. */
 (function(){
 "use strict";
-var GH="https://api.github.com", OWN="aramiguia-lgtm", PUB="arami-watches", PRIV="arami-privado", BR="main";
+var GH="https://api.github.com", OWN="aramiguia-lgtm", PUB="arami-watches", PRIV="arami-privado.", BR="main";
 var LS={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
 var SS={get:function(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{v==null?sessionStorage.removeItem(k):sessionStorage.setItem(k,v)}catch(e){}}};
 var TOK=LS.get("arami-gh");
@@ -598,7 +598,7 @@ function setup(){
     api("/repos/"+OWN+"/"+PRIV).then(function(){ return api("/repos/"+OWN+"/"+PUB) }).then(function(j){
       if(j.permissions&&j.permissions.push===false) throw {status:403};
       LS.set("arami-gh",t); msg.textContent="Listo. Abriendo Administrar…"; location.hash="#admin"; location.reload() },
-    function(e){ TOK=null; msg.textContent=e&&e.status===404?"El token no tiene acceso a los repositorios arami-watches y arami-privado.":e&&(e.status===401||e.status===403)?"Ese token no es válido o no tiene permiso de escritura.":"No se pudo comprobar. Revisa tu conexión." }) };
+    function(e){ TOK=null; msg.textContent=e&&e.status===404?"El token no tiene acceso a los repositorios arami-watches y arami-privado. (con punto).":e&&(e.status===401||e.status===403)?"Ese token no es válido o no tiene permiso de escritura.":"No se pudo comprobar. Revisa tu conexión." }) };
   setTimeout(function(){ m.querySelector("#ghTok").focus() },50);
 }
 document.addEventListener("click",function(e){ var t=e.target&&e.target.closest&&e.target.closest("#adminLink"); if(!t) return; e.preventDefault(); e.stopImmediatePropagation(); setup() },true);
