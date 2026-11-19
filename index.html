@@ -262,7 +262,7 @@ s.was{color:var(--muted);font-size:.75em;margin-left:6px}
   </header>
 
   <div class="view" id="publicView">
-    <section class="hero"><h1 data-t="h1"></h1><p data-t="lead"></p><div class="row herobtns"><a class="btn primary" id="heroBuild" href="#build" data-t="heroCta"></a><a class="btn ghost" href="#shelf" data-t="heroCol"></a></div></section>
+    <section class="hero"><h1 data-t="h1"></h1><p data-t="lead"></p></section>
     <section><h2 data-t="s1"></h2><div class="shelf" id="shelf"></div></section>
     <section class="product" id="product" aria-live="polite">
       <div class="photo" id="pPhoto"></div>
@@ -301,15 +301,7 @@ s.was{color:var(--muted);font-size:.75em;margin-left:6px}
         </div>
       </div>
     </section>
-    <section id="about"><h2 data-t="abH"></h2>
-      <div class="about">
-        <div class="acard"><b data-t="ab1t"></b><p data-t="ab1"></p></div>
-        <div class="acard"><b data-t="ab2t"></b><p data-t="ab2"></p></div>
-        <div class="acard"><b data-t="ab3t"></b><p data-t="ab3"></p></div>
-        <div class="acard"><b data-t="ab4t"></b><p data-t="ab4"></p></div>
-        <div class="acard"><b data-t="ab5t"></b><p data-t="ab5"></p></div>
-      </div>
-    </section>
+    
     <div class="trust" id="trust"></div>
     <section><h2 data-t="s2"></h2>
       <div class="ticket"><div id="rows"></div><div class="tot"><span data-t="total"></span><b id="total">$0</b></div></div>
@@ -325,6 +317,15 @@ s.was{color:var(--muted);font-size:.75em;margin-left:6px}
         <div class="row"><a class="btn primary" id="wa" href="#" target="_blank" rel="noopener"></a><button type="button" class="btn ghost" id="copy"></button></div>
         <div class="status" id="status" aria-live="polite"></div>
       </form>
+    </section>
+    <section id="about"><h2 data-t="abH"></h2>
+      <div class="about">
+        <div class="acard"><b data-t="ab1t"></b><p data-t="ab1"></p></div>
+        <div class="acard"><b data-t="ab2t"></b><p data-t="ab2"></p></div>
+        <div class="acard"><b data-t="ab3t"></b><p data-t="ab3"></p></div>
+        <div class="acard"><b data-t="ab4t"></b><p data-t="ab4"></p></div>
+        <div class="acard"><b data-t="ab5t"></b><p data-t="ab5"></p></div>
+      </div>
     </section>
     <div class="contact"><span data-t="contact"></span><b>305 452 3548</b></div>
     <button type="button" class="adminlink" id="adminLink">Administrar</button>
@@ -674,7 +675,7 @@ function applyLang(){
   document.querySelectorAll("#publicView [data-t], #bar [data-t]").forEach(function(el){el.textContent=T[lang][el.dataset.t]});
   $("l-es").setAttribute("aria-pressed",lang==="es"); $("l-en").setAttribute("aria-pressed",lang==="en");
   $("add").textContent=T[lang].add; $("wa").textContent=T[lang].wa; $("copy").textContent=T[lang].copy;
-  var UI=CAT.ui||{}; if(UI.hero===false){ document.querySelector('.hero [data-t="h1"]').textContent=T[lang].h1old; document.querySelector('.hero [data-t="lead"]').textContent=T[lang].leadold; document.querySelector('.herobtns').hidden=true } 
+  var UI=CAT.ui||{}; if(UI.hero===false){ document.querySelector('.hero [data-t="h1"]').textContent=T[lang].h1old; document.querySelector('.hero [data-t="lead"]').textContent=T[lang].leadold; } 
   $("about").hidden=UI.about===false;
   renderShelf(); renderProduct(); renderBuild(); renderCart();
 }
