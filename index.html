@@ -230,6 +230,12 @@ s.was{color:var(--muted);font-size:.75em;margin-left:6px}
 .ppub{font-size:13px;color:var(--good);font-weight:600}
 .ppub.off{color:var(--warn)}
 .pcat{margin-top:6px}
+.herobtns{margin-top:16px}
+.about{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:620px){.about{grid-template-columns:1fr 1fr}}
+.acard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.acard b{font-size:15px}
+.acard p{margin:0;font-size:14px;color:var(--muted)}
 .confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
 @media (prefers-reduced-motion:no-preference){.w,.btn,.chip{transition:border-color .15s,background .15s,color .15s}}
 </style>
@@ -256,7 +262,7 @@ s.was{color:var(--muted);font-size:.75em;margin-left:6px}
   </header>
 
   <div class="view" id="publicView">
-    <section class="hero"><h1 data-t="h1"></h1><p data-t="lead"></p></section>
+    <section class="hero"><h1 data-t="h1"></h1><p data-t="lead"></p><div class="row herobtns"><a class="btn primary" id="heroBuild" href="#build" data-t="heroCta"></a><a class="btn ghost" href="#shelf" data-t="heroCol"></a></div></section>
     <section><h2 data-t="s1"></h2><div class="shelf" id="shelf"></div></section>
     <section class="product" id="product" aria-live="polite">
       <div class="photo" id="pPhoto"></div>
@@ -293,6 +299,15 @@ s.was{color:var(--muted);font-size:.75em;margin-left:6px}
           <button type="button" class="btn primary" id="bAdd" data-t="bAdd"></button>
           <div class="mine" id="bMine" hidden=""></div>
         </div>
+      </div>
+    </section>
+    <section id="about"><h2 data-t="abH"></h2>
+      <div class="about">
+        <div class="acard"><b data-t="ab1t"></b><p data-t="ab1"></p></div>
+        <div class="acard"><b data-t="ab2t"></b><p data-t="ab2"></p></div>
+        <div class="acard"><b data-t="ab3t"></b><p data-t="ab3"></p></div>
+        <div class="acard"><b data-t="ab4t"></b><p data-t="ab4"></p></div>
+        <div class="acard"><b data-t="ab5t"></b><p data-t="ab5"></p></div>
       </div>
     </section>
     <div class="trust" id="trust"></div>
@@ -474,6 +489,15 @@ Crystal: Sapphire"></textarea></div>
         <div class="status" id="pStatus" aria-live="polite"></div>
       </div>
     </section>
+    <section><h2>Página de inicio</h2>
+      <div class="card">
+        <label class="chk"><input type="checkbox" id="uHero"><span>Usar la bienvenida nueva (“Tu reloj automático, armado a tu gusto”)</span></label>
+        <label class="chk"><input type="checkbox" id="uAbout"><span>Mostrar la sección “Sobre ARAMI” (garantía, entrega y devoluciones)</span></label>
+        <p class="note">Si desmarcas una opción y publicas, la página vuelve a como estaba antes.</p>
+        <div class="row"><button type="button" class="btn primary" id="uSave">Guardar y publicar</button></div>
+        <div class="status" id="uStatus" aria-live="polite"></div>
+      </div>
+    </section>
     <section><h2>Clave de administrador</h2>
       <div class="card">
         <div class="two">
@@ -620,14 +644,14 @@ var ss={get:function(k){try{return sessionStorage.getItem(k)}catch(e){return nul
 
 /* ================= PUBLIC VITRINA ================= */
 var T={
- es:{h1:"Relojes automáticos hechos para durar",lead:"Máquina japonesa, cristal de zafiro y cajas de acero inoxidable o titanio. Elige tu modelo, personalízalo y envíanos tu pedido por WhatsApp.",
+ es:{h1:"Tu reloj automático, armado a tu gusto",lead:"Elige un modelo de la colección o diseña el tuyo pieza por pieza: caja, esfera, manecillas y correa. Máquina japonesa, cristal de zafiro y el logo ARAMI en cada esfera. Lo armamos a mano en Miami.",heroCta:"Arma tu reloj",heroCol:"Ver colección",h1old:"Relojes automáticos hechos para durar",leadold:"Máquina japonesa, cristal de zafiro y cajas de acero inoxidable o titanio. Elige tu modelo, personalízalo y envíanos tu pedido por WhatsApp.",
   s1:"Colección",custom:"Personalización",engtxt:"Texto para grabar en la tapa (máx. 40 letras)",engboxtxt:"Texto para grabar en la caja (máx. 30 letras)",incl:"Incluye caja de presentación ARAMI grabada",engB:"Grabado en caja",
   qty:"Cantidad",add:"Agregar al pedido",added:"Agregado al pedido.",tr1b:"Japón",tr1:"Movimiento automático japonés",tr2b:"Zafiro",tr2:"Cristal resistente a rayas",tr3b:"Acero · Titanio",tr3:"Acero 316L o 904L, o titanio, según el modelo",
   s2:"Tu pedido",empty:"Aún no has agregado relojes. Elige un modelo arriba.",total:"Total",s3:"Tus datos",fname:"Nombre",fphone:"Teléfono / WhatsApp",fcity:"Ciudad o dirección de entrega",fnotes:"Comentarios",
   wa:"Enviar pedido por WhatsApp",copy:"Copiar pedido",copied:"Pedido copiado. Pégalo en WhatsApp al 305 452 3548.",need:"Agrega al menos un reloj al pedido.",contact:"¿Preguntas? Escríbenos por WhatsApp:",
   barL:"Total del pedido",barGo:"Hacer pedido",each:"c/u",eng:"Grabado",soon:"Muy pronto nuevos modelos.",
   msgHi:"Hola ARAMI, quiero hacer este pedido:",msgTot:"Total estimado",msgName:"Nombre",msgPhone:"Teléfono",msgCity:"Entrega",msgNotes:"Comentarios"},
- en:{h1:"Automatic watches built to last",lead:"Japanese movement, sapphire crystal and stainless steel or titanium cases. Pick your model, personalize it and send us your order on WhatsApp.",
+ en:{h1:"Your automatic watch, built your way",lead:"Pick a model from the collection or design your own piece by piece: case, dial, hands and strap. Japanese movement, sapphire crystal and the ARAMI logo on every dial. Hand-assembled in Miami.",heroCta:"Build your watch",heroCol:"See the collection",h1old:"Automatic watches built to last",leadold:"Japanese movement, sapphire crystal and stainless steel or titanium cases. Pick your model, personalize it and send us your order on WhatsApp.",
   s1:"Collection",custom:"Personalization",engtxt:"Caseback engraving text (max 40 characters)",engboxtxt:"Box engraving text (max 30 characters)",incl:"Includes engraved ARAMI presentation box",engB:"Box engraving",
   qty:"Quantity",add:"Add to order",added:"Added to your order.",tr1b:"Japan",tr1:"Japanese automatic movement",tr2b:"Sapphire",tr2:"Scratch-resistant crystal",tr3b:"Steel · Titanium",tr3:"316L or 904L steel, or titanium, depending on the model",
   s2:"Your order",empty:"No watches yet. Pick a model above.",total:"Total",s3:"Your details",fname:"Name",fphone:"Phone / WhatsApp",fcity:"City or delivery address",fnotes:"Comments",
@@ -650,6 +674,8 @@ function applyLang(){
   document.querySelectorAll("#publicView [data-t], #bar [data-t]").forEach(function(el){el.textContent=T[lang][el.dataset.t]});
   $("l-es").setAttribute("aria-pressed",lang==="es"); $("l-en").setAttribute("aria-pressed",lang==="en");
   $("add").textContent=T[lang].add; $("wa").textContent=T[lang].wa; $("copy").textContent=T[lang].copy;
+  var UI=CAT.ui||{}; if(UI.hero===false){ document.querySelector('.hero [data-t="h1"]').textContent=T[lang].h1old; document.querySelector('.hero [data-t="lead"]').textContent=T[lang].leadold; document.querySelector('.herobtns').hidden=true } 
+  $("about").hidden=UI.about===false;
   renderShelf(); renderProduct(); renderBuild(); renderCart();
 }
 function renderShelf(){
@@ -724,6 +750,19 @@ $("l-es").onclick=function(){ lang="es"; applyLang() }; $("l-en").onclick=functi
 var BT={es:{bH:"Arma tu reloj",bLead:"Elige la caja, la esfera, las manecillas y la correa. Cada reloj lleva el logo ARAMI y se arma a mano.",caja:"Caja",esfera:"Esfera",manecillas:"Manecillas",correa:"Correa",bIncl:"Incluye",bName:"Reloj ARAMI personalizado",bAdd:"Agregar mi reloj al pedido",bColor:"Color o versión",bPrev:"Vista previa: solo tú ves esta sección. Actívala en Administrar › Arma tu reloj."},
  en:{bH:"Build your watch",bLead:"Choose the case, dial, hands and strap. Every watch carries the ARAMI logo and is assembled by hand.",caja:"Case",esfera:"Dial",manecillas:"Hands",correa:"Strap",bIncl:"Includes",bName:"Custom ARAMI watch",bAdd:"Add my watch to the order",bColor:"Color or version",bPrev:"Preview: only you can see this section."}};
 Object.keys(BT).forEach(function(l){ Object.keys(BT[l]).forEach(function(k){ T[l][k]=BT[l][k] }) });
+
+Object.assign(T.es,{abH:"Sobre ARAMI",
+ ab1t:"Quiénes somos",ab1:"ARAMI es una marca pequeña de Miami. Elegimos cada pieza, ponemos el logo ARAMI en la esfera, grabamos la tapa y armamos cada reloj a mano, uno por uno.",
+ ab2t:"Cómo lo armamos y revisamos",ab2:"Montamos la máquina, la esfera y las manecillas, y antes de entregarlo revisamos que el reloj funcione bien, que la fecha cambie correctamente y que la hora sea precisa.",
+ ab3t:"Garantía de 1 año",ab3:"Cubre la máquina y cualquier defecto de armado durante un año desde la entrega. No cubre golpes, caídas, entrada de agua por mal uso ni el desgaste normal de la correa o la caja.",
+ ab4t:"Tiempo de entrega",ab4:"De 3 a 6 semanas desde que confirmas tu pedido. Entregamos en Miami y enviamos a todo Estados Unidos y a otros países; el costo de envío te lo confirmamos por WhatsApp.",
+ ab5t:"Devoluciones",ab5:"Tienes 7 días desde que recibes un modelo de la colección para devolverlo, sin usar y en su caja. Los relojes de “Arma tu reloj” y los relojes grabados son personalizados y no tienen devolución, pero sí tienen la garantía de 1 año."});
+Object.assign(T.en,{abH:"About ARAMI",
+ ab1t:"Who we are",ab1:"ARAMI is a small Miami brand. We choose every part, put the ARAMI logo on the dial, engrave the caseback and assemble each watch by hand, one at a time.",
+ ab2t:"How we build and check it",ab2:"We fit the movement, dial and hands, and before delivery we check that the watch runs well, the date changes correctly and it keeps accurate time.",
+ ab3t:"1-year warranty",ab3:"Covers the movement and any assembly defect for one year from delivery. It does not cover impacts, drops, water damage from misuse, or normal wear of the strap or case.",
+ ab4t:"Delivery time",ab4:"3 to 6 weeks from order confirmation. We deliver in Miami and ship across the US and internationally; we confirm the shipping cost on WhatsApp.",
+ ab5t:"Returns",ab5:"You have 7 days from receiving a collection model to return it, unworn and in its box. “Build your watch” pieces and engraved watches are personalized and can't be returned, but they do carry the 1-year warranty."});
 var BUILD=CAT.build||{parts:[]}, BCATS=["caja","esfera","manecillas","correa"], B={sel:{},opt:{},x:{},xo:{}};
 function bPart(id){ return (BUILD.parts||[]).filter(function(p){return p.id===id})[0] }
 function bParts(c){ return (BUILD.parts||[]).filter(function(p){return p.cat===c&&(+p.price>0)}) }
@@ -738,7 +777,7 @@ function bDesc(c){ return (c.parts||[]).map(function(id){ var p=bPart(id); retur
 function bShown(){ return !!BUILD.on||(OWNER&&ss.get("arami-unlocked")==="1") }
 function renderBuild(){
   var sec=$("build"); if(!sec) return;
-  var vis=bShown()&&bParts("caja").length>0; sec.hidden=!vis; if(!vis) return;
+  var vis=bShown()&&bParts("caja").length>0; sec.hidden=!vis; var hb=$("heroBuild"); if(hb) hb.hidden=!vis; if(!vis) return;
   $("bOwn").hidden=!!BUILD.on;
   BCATS.forEach(function(c){ var ps=bParts(c); if(!ps.some(function(p){return p.id===B.sel[c]})) B.sel[c]=ps[0]?ps[0].id:null });
   var st=$("bSteps"); st.innerHTML="";
@@ -947,6 +986,8 @@ function initAdmin(){
   $("promoText").oninput=function(){ $("promoWa").href="https://wa.me/?text="+encodeURIComponent($("promoText").value) };
   $("sAdj").value=ADJ; showAdj();
   $("sAdj").oninput=showAdj;
+  var UI0=CAT.ui||{}; $("uHero").checked=UI0.hero!==false; $("uAbout").checked=UI0.about!==false;
+  $("uSave").onclick=function(){ var cat=clone(CAT); cat.ui={hero:$("uHero").checked,about:$("uAbout").checked}; publishCat(cat,$("uStatus")) };
   $("sSave").onclick=function(){ var cat=clone(CAT); cat.adj=+$("sAdj").value; if(!cat.adj) delete cat.adj; publishCat(cat,$("sStatus")) };
   $("sReset").onclick=function(){ $("sAdj").value=0; showAdj(); if(ADJ){ var cat=clone(CAT); delete cat.adj; publishCat(cat,$("sStatus")) } };
   $("aPinSave").onclick=function(){ var a=$("aPinNew").value.trim(), b=$("aPinNew2").value.trim(), m=$("aPinMsg");
