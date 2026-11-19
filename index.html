@@ -231,6 +231,8 @@ s.was{color:var(--muted);font-size:.75em;margin-left:6px}
 .ppub.off{color:var(--warn)}
 .pcat{margin-top:6px}
 .herobtns{margin-top:16px}
+html{scroll-behavior:smooth}
+#build{scroll-margin-top:12px}
 .about{display:grid;grid-template-columns:1fr;gap:10px}
 @media (min-width:620px){.about{grid-template-columns:1fr 1fr}}
 .acard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
@@ -262,7 +264,7 @@ s.was{color:var(--muted);font-size:.75em;margin-left:6px}
   </header>
 
   <div class="view" id="publicView">
-    <section class="hero"><h1 data-t="h1"></h1><p data-t="lead"></p></section>
+    <section class="hero"><h1 data-t="h1"></h1><p data-t="lead"></p><div class="row herobtns"><a class="btn primary" id="heroBuild" href="#build" data-t="heroCta"></a></div></section>
     <section><h2 data-t="s1"></h2><div class="shelf" id="shelf"></div></section>
     <section class="product" id="product" aria-live="polite">
       <div class="photo" id="pPhoto"></div>
