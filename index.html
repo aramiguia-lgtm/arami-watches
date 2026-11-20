@@ -239,6 +239,7 @@ html{scroll-behavior:smooth}
 .acard b{font-size:15px}
 .acard p{margin:0;font-size:14px;color:var(--muted)}
 .ppmsg{min-height:0}
+.ticket .shipt{font-weight:500;color:var(--muted);border-bottom:1px solid var(--line)}
 .ppbox{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
 #ppBtns{max-width:420px}
 .ppdone{background:var(--ice);border-radius:10px;padding:12px;font-size:15px;display:flex;flex-direction:column;gap:10px}
@@ -310,7 +311,7 @@ html{scroll-behavior:smooth}
     
     <div class="trust" id="trust"></div>
     <section><h2 data-t="s2"></h2>
-      <div class="ticket"><div id="rows"></div><div class="tot"><span data-t="total"></span><b id="total">$0</b></div></div>
+      <div class="ticket"><div id="rows"></div><div class="tot shipt" id="shipRow" hidden=""><span data-t="shipL"></span><span id="shipV"></span></div><div class="tot"><span data-t="total"></span><b id="total">$0</b></div></div>
     </section>
     <section id="order"><h2 data-t="s3"></h2>
       <form id="form">
@@ -318,6 +319,7 @@ html{scroll-behavior:smooth}
           <div class="f"><label for="name" data-t="fname"></label><input type="text" id="name" autocomplete="name"></div>
           <div class="f"><label for="phone" data-t="fphone"></label><input type="tel" id="phone" autocomplete="tel"></div>
         </div>
+        <div class="f"><label for="ship" data-t="fship"></label><select id="ship"><option value="us" data-t="shipUS"></option><option value="miami" data-t="shipMia"></option><option value="intl" data-t="shipIntl"></option></select></div>
         <div class="f"><label for="city" data-t="fcity"></label><input type="text" id="city"></div>
         <div class="f"><label for="notes" data-t="fnotes"></label><textarea id="notes" rows="3"></textarea></div>
         <div class="ppbox" id="ppBox" hidden=""><span class="lbl" data-t="ppH"></span><p class="note" data-t="ppNote"></p><div id="ppBtns"></div><div class="ppmsg" id="ppMsgC"></div><div class="ppdone" id="ppDone" hidden=""></div></div>
@@ -727,7 +729,7 @@ function renderCart(){ setTimeout(ppUpdate,0);
     var d=document.createElement("div"); d.className="r";
     d.innerHTML='<div class="n"><b>'+c.qty+' × '+esc(x.name)+'</b><small>'+esc(ex.join(" · "))+(c.qty>1?(ex.length?" · ":"")+money(c.unit)+" "+T[lang].each:"")+'</small></div><span class="a">'+money(c.unit*c.qty)+'</span><button type="button" class="rm" aria-label="Quitar">×</button>';
     d.querySelector(".rm").onclick=function(){ cart.splice(i,1); renderCart() }; r.appendChild(d) });
-  var tot=cart.reduce(function(a,c){return a+c.unit*c.qty},0); $("total").textContent=money(tot); $("barT").textContent=money(tot);
+  var tot=cartTotal(); $("shipRow").hidden=!cart.length; $("shipV").textContent=shipLabel(); $("total").textContent=money(tot); $("barT").textContent=money(tot);
   buildMsg();
 }
 function buildMsg(){
@@ -735,7 +737,7 @@ function buildMsg(){
   cart.forEach(function(c){ var x=c.b?{name:T[lang].bName}:CAT.models.filter(function(z){return z.id===c.id})[0]; if(!x) return; t+="\n• "+c.qty+" × "+x.name+" — "+money(c.unit*c.qty); if(c.b) bDesc(c).forEach(function(z){t+="\n   · "+z});
     EXTRAS.filter(function(e){return c.extras.indexOf(e.id)>=0}).forEach(function(e){t+="\n   + "+(e[lang]||e.es)+(c.xo&&c.xo[e.id]?" ("+c.xo[e.id]+")":"")});
     if(c.eng) t+="\n   "+L.eng+': "'+c.eng+'"'; if(c.engBox) t+="\n   "+L.engB+': "'+c.engBox+'"' });
-  t+="\n\n"+L.msgTot+": "+money(cart.reduce(function(a,c){return a+c.unit*c.qty},0))+" USD\n("+L.incl+")";
+  t+="\n\n"+L.shipL+": "+$("ship").options[$("ship").selectedIndex].text+"\n"+L.msgTot+": "+money(cartTotal())+" USD"+(shipKind()==="intl"?" + "+L.shipL.toLowerCase()+" ("+L.shipQ.toLowerCase()+")":"")+"\n("+L.incl+")";
   [["name",L.msgName],["phone",L.msgPhone],["city",L.msgCity],["notes",L.msgNotes]].forEach(function(p){ var v=$(p[0]).value.trim(); if(v) t+="\n"+p[1]+": "+v });
   $("wa").href="https://wa.me/"+(CAT.wa||"13054523548")+"?text="+encodeURIComponent(t);
   return t;
@@ -750,7 +752,7 @@ $("qPlus").onclick=function(){ $("qty").value=(parseInt($("qty").value)||1)+1 };
 $("wa").addEventListener("click",function(ev){ if(!cart.length){ ev.preventDefault(); flash(T[lang].need) } });
 $("copy").onclick=function(){ if(!cart.length){ flash(T[lang].need); return } var t=buildMsg();
   try{ navigator.clipboard.writeText(t).then(function(){flash(T[lang].copied)},function(){flash(t)}) }catch(e){ flash(t) } };
-["name","phone","city","notes"].forEach(function(id){ $(id).oninput=buildMsg });
+["name","phone","city","notes"].forEach(function(id){ $(id).oninput=buildMsg }); $("ship").onchange=renderCart;
 $("form").addEventListener("submit",function(e){e.preventDefault()});
 $("l-es").onclick=function(){ lang="es"; applyLang() }; $("l-en").onclick=function(){ lang="en"; applyLang() };
 
@@ -763,13 +765,13 @@ Object.assign(T.es,{abH:"Sobre ARAMI",
  ab1t:"Quiénes somos",ab1:"ARAMI es una marca pequeña de Miami. Elegimos cada pieza, ponemos el logo ARAMI en la esfera, grabamos la tapa y armamos cada reloj a mano, uno por uno.",
  ab2t:"Cómo lo armamos y revisamos",ab2:"Montamos la máquina, la esfera y las manecillas, y antes de entregarlo revisamos que el reloj funcione bien, que la fecha cambie correctamente y que la hora sea precisa.",
  ab3t:"Garantía de 1 año",ab3:"Cubre la máquina y cualquier defecto de armado durante un año desde la entrega. No cubre golpes, caídas, entrada de agua por mal uso ni el desgaste normal de la correa o la caja.",
- ab4t:"Tiempo de entrega",ab4:"De 3 a 6 semanas desde que confirmas tu pedido. Entregamos en Miami y enviamos a todo Estados Unidos y a otros países; el costo de envío te lo confirmamos por WhatsApp.",
+ ab4t:"Tiempo de entrega",ab4:"De 3 a 6 semanas desde que confirmas tu pedido. La entrega personal en Miami no tiene costo, el envío a todo Estados Unidos cuesta $15 y el envío internacional te lo cotizamos por WhatsApp.",
  ab5t:"Devoluciones",ab5:"Tienes 7 días desde que recibes un modelo de la colección para devolverlo, sin usar y en su caja. Los relojes de “Arma tu reloj” y los relojes grabados son personalizados y no tienen devolución, pero sí tienen la garantía de 1 año."});
 Object.assign(T.en,{abH:"About ARAMI",
  ab1t:"Who we are",ab1:"ARAMI is a small Miami brand. We choose every part, put the ARAMI logo on the dial, engrave the caseback and assemble each watch by hand, one at a time.",
  ab2t:"How we build and check it",ab2:"We fit the movement, dial and hands, and before delivery we check that the watch runs well, the date changes correctly and it keeps accurate time.",
  ab3t:"1-year warranty",ab3:"Covers the movement and any assembly defect for one year from delivery. It does not cover impacts, drops, water damage from misuse, or normal wear of the strap or case.",
- ab4t:"Delivery time",ab4:"3 to 6 weeks from order confirmation. We deliver in Miami and ship across the US and internationally; we confirm the shipping cost on WhatsApp.",
+ ab4t:"Delivery time",ab4:"3 to 6 weeks from order confirmation. In-person delivery in Miami is free, shipping anywhere in the US is $15, and we quote international shipping on WhatsApp.",
  ab5t:"Returns",ab5:"You have 7 days from receiving a collection model to return it, unworn and in its box. “Build your watch” pieces and engraved watches are personalized and can't be returned, but they do carry the 1-year warranty."});
 var BUILD=CAT.build||{parts:[]}, BCATS=["caja","esfera","manecillas","correa"], B={sel:{},opt:{},x:{},xo:{}};
 function bPart(id){ return (BUILD.parts||[]).filter(function(p){return p.id===id})[0] }
@@ -828,10 +830,14 @@ $("bAdd").onclick=function(){ var parts=bCats().map(function(c){return B.sel[c]}
   renderCart(); flash(T[lang].added); $("bAdd").textContent="✓ "+T[lang].added; setTimeout(function(){$("bAdd").textContent=T[lang].bAdd},1600) };
 
 /* ================= PAYPAL ================= */
-Object.assign(T.es,{ppH:"Paga con PayPal",ppNote:"Paga ahora con PayPal o en cuotas con Paga después. El envío se confirma por WhatsApp. Llena tu nombre y teléfono arriba antes de pagar.",ppNeed:"Escribe tu nombre y teléfono antes de pagar.",ppOk:"¡Pago recibido! Número de PayPal:",ppWa:"Enviar mi pedido por WhatsApp",ppErr:"No se pudo completar el pago. Intenta de nuevo o escríbenos por WhatsApp.",ppPaid:"PAGADO CON PAYPAL"});
-Object.assign(T.en,{ppH:"Pay with PayPal",ppNote:"Pay now with PayPal or in installments with Pay Later. Shipping is confirmed on WhatsApp. Fill in your name and phone above before paying.",ppNeed:"Enter your name and phone before paying.",ppOk:"Payment received! PayPal ID:",ppWa:"Send my order on WhatsApp",ppErr:"The payment could not be completed. Try again or message us on WhatsApp.",ppPaid:"PAID WITH PAYPAL"});
-var PP_ID="BAA0WQhVjbYJtYy3VJi5Nj4oAfM12VDNarSGP0zFVrSMUjjS4dqpQ-v34ImI8ClWiubwoM-vaWLbHK5oQ4", PP=null, ppRendered=false;
-function cartTotal(){ return cart.reduce(function(a,c){return a+c.unit*c.qty},0) }
+Object.assign(T.es,{fship:"Entrega",shipUS:"Envío a Estados Unidos (+$15)",shipMia:"Entrega personal en Miami (sin costo)",shipIntl:"Envío internacional (se cotiza por WhatsApp)",shipL:"Envío",shipQ:"Por cotizar",shipFree:"Sin costo",ppH:"Paga con PayPal",ppNote:"Paga ahora con PayPal o en cuotas con Paga después. Llena tu nombre, teléfono y forma de entrega arriba antes de pagar.",ppNeed:"Escribe tu nombre y teléfono antes de pagar.",ppOk:"¡Pago recibido! Número de PayPal:",ppWa:"Enviar mi pedido por WhatsApp",ppErr:"No se pudo completar el pago. Intenta de nuevo o escríbenos por WhatsApp.",ppPaid:"PAGADO CON PAYPAL"});
+Object.assign(T.en,{fship:"Delivery",shipUS:"Shipping within the US (+$15)",shipMia:"In-person delivery in Miami (free)",shipIntl:"International shipping (quoted on WhatsApp)",shipL:"Shipping",shipQ:"To be quoted",shipFree:"Free",ppH:"Pay with PayPal",ppNote:"Pay now with PayPal or in installments with Pay Later. Fill in your name, phone and delivery option above before paying.",ppNeed:"Enter your name and phone before paying.",ppOk:"Payment received! PayPal ID:",ppWa:"Send my order on WhatsApp",ppErr:"The payment could not be completed. Try again or message us on WhatsApp.",ppPaid:"PAID WITH PAYPAL"});
+var SHIP_US=15, PP_ID="BAA0WQhVjbYJtYy3VJi5Nj4oAfM12VDNarSGP0zFVrSMUjjS4dqpQ-v34ImI8ClWiubwoM-vaWLbHK5oQ4", PP=null, ppRendered=false;
+function itemsTotal(){ return cart.reduce(function(a,c){return a+c.unit*c.qty},0) }
+function shipKind(){ var el=$("ship"); return el?el.value:"us" }
+function shipCost(){ return cart.length&&shipKind()==="us"?SHIP_US:0 }
+function shipLabel(){ var k=shipKind(); return k==="us"?money(SHIP_US):k==="miami"?T[lang].shipFree:T[lang].shipQ }
+function cartTotal(){ return itemsTotal()+shipCost() }
 function ppMsg(id,amt,place){ var el=$(id); if(!el) return; if(!PP||!PP.Messages||!(amt>0)){ el.innerHTML=""; return }
   if(el.dataset.amt==String(amt)) return; el.dataset.amt=amt;
   try{ PP.Messages({amount:amt,placement:place,style:{layout:"text",text:{size:13}}}).render(el) }catch(e){} }
@@ -844,9 +850,9 @@ function ppUpdate(){
   if(tot>0&&!ppRendered){ ppRendered=true; PP.Buttons({
       style:{layout:"vertical",shape:"rect",label:"pay"},
       onClick:function(d,actions){ if(!$("name").value.trim()||!$("phone").value.trim()){ flash(T[lang].ppNeed); $("name").focus(); return actions.reject() } return actions.resolve() },
-      createOrder:function(d,actions){ var tot=Math.round(cartTotal()*100)/100;
+      createOrder:function(d,actions){ var it=Math.round(itemsTotal()*100)/100, sh=shipCost(), tot=Math.round((it+sh)*100)/100;
         return actions.order.create({intent:"CAPTURE",purchase_units:[{description:("ARAMI Watches: "+cart.map(function(c){ var m=c.b?{name:T.es.bName}:(CAT.models.filter(function(z){return z.id===c.id})[0]||{name:"Reloj"}); return c.qty+"x "+m.name }).join(", ")).slice(0,127),
-          amount:{currency_code:"USD",value:tot.toFixed(2)}}],application_context:{shipping_preference:"GET_FROM_FILE",brand_name:"ARAMI Watches"}}) },
+          amount:{currency_code:"USD",value:tot.toFixed(2),breakdown:{item_total:{currency_code:"USD",value:it.toFixed(2)},shipping:{currency_code:"USD",value:sh.toFixed(2)}}}}],application_context:{shipping_preference:(shipKind()==="miami"?"NO_SHIPPING":"GET_FROM_FILE"),brand_name:"ARAMI Watches"}}) },
       onApprove:function(d,actions){ return actions.order.capture().then(function(o){
           var cap=(((o.purchase_units||[])[0]||{}).payments||{}).captures, txid=(cap&&cap[0]&&cap[0].id)||o.id;
           var msg=buildMsg()+"\n\n✅ "+T[lang].ppPaid+": "+money(cartTotal())+" USD\nPayPal: "+txid;
