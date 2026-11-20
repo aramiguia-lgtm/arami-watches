@@ -238,6 +238,10 @@ html{scroll-behavior:smooth}
 .acard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
 .acard b{font-size:15px}
 .acard p{margin:0;font-size:14px;color:var(--muted)}
+.ppmsg{min-height:0}
+.ppbox{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+#ppBtns{max-width:420px}
+.ppdone{background:var(--ice);border-radius:10px;padding:12px;font-size:15px;display:flex;flex-direction:column;gap:10px}
 .confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
 @media (prefers-reduced-motion:no-preference){.w,.btn,.chip{transition:border-color .15s,background .15s,color .15s}}
 </style>
@@ -270,7 +274,7 @@ html{scroll-behavior:smooth}
       <div class="photo" id="pPhoto"></div>
       <div class="info">
         <h3 id="pName"></h3>
-        <div class="price" id="pPrice"></div>
+        <div class="price" id="pPrice"></div><div class="ppmsg" id="ppMsgP"></div>
         <div class="incl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"></path><path d="M3 8l9 5 9-5M12 13v8"></path></svg><span data-t="incl"></span></div>
         <ul class="specs" id="pSpecs"></ul>
         <div class="opts">
@@ -293,7 +297,7 @@ html{scroll-behavior:smooth}
         <div class="info">
           <div id="bSteps" class="opts"></div>
           <div class="incl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"></path><path d="M3 8l9 5 9-5M12 13v8"></path></svg><span id="bIncl"></span></div>
-          <div class="price" id="bPrice"></div>
+          <div class="price" id="bPrice"></div><div class="ppmsg" id="ppMsgB"></div>
           <div class="opts" id="bExWrap"><span class="lbl" data-t="custom"></span><div id="bExtras" class="opts"></div></div>
           <div class="f"><span class="lbl" data-t="qty"></span>
             <div class="stepper"><button type="button" id="bMinus" aria-label="-">−</button><input type="number" id="bQty" min="1" value="1" aria-label="Cantidad"><button type="button" id="bPlus" aria-label="+">+</button></div>
@@ -316,6 +320,7 @@ html{scroll-behavior:smooth}
         </div>
         <div class="f"><label for="city" data-t="fcity"></label><input type="text" id="city"></div>
         <div class="f"><label for="notes" data-t="fnotes"></label><textarea id="notes" rows="3"></textarea></div>
+        <div class="ppbox" id="ppBox" hidden=""><span class="lbl" data-t="ppH"></span><p class="note" data-t="ppNote"></p><div id="ppBtns"></div><div class="ppmsg" id="ppMsgC"></div><div class="ppdone" id="ppDone" hidden=""></div></div>
         <div class="row"><a class="btn primary" id="wa" href="#" target="_blank" rel="noopener"></a><button type="button" class="btn ghost" id="copy"></button></div>
         <div class="status" id="status" aria-live="polite"></div>
       </form>
@@ -696,7 +701,7 @@ function renderProduct(){
   $("pPhoto").innerHTML=ims.length?'<img src="'+ims[photoIx]+'" alt="'+esc(x.name)+'">'+(ims.length>1?'<div class="thumbs">'+ims.map(function(u,i){return '<button type="button" data-i="'+i+'" aria-pressed="'+(i===photoIx)+'" aria-label="Foto '+(i+1)+'"><img src="'+u+'" alt=""></button>'}).join("")+'</div>':''):'<span class="noimg big">ARAMI</span>';
   $("pPhoto").querySelectorAll(".thumbs button").forEach(function(b){ b.onclick=function(){ photoIx=+b.dataset.i; renderProduct() } });
   $("pName").textContent=x.name;
-  $("pPrice").innerHTML=money(unitPrice())+'<small>USD</small>'+(ADJ<0?'<s class="was">'+money(unitPrice()-pubPrice(x)+(+x.price||0))+'</s><span class="sale">'+ADJ+'%</span>':'');
+  setTimeout(ppUpdate,0); $("pPrice").innerHTML=money(unitPrice())+'<small>USD</small>'+(ADJ<0?'<s class="was">'+money(unitPrice()-pubPrice(x)+(+x.price||0))+'</s><span class="sale">'+ADJ+'%</span>':'');
   var sp=specsOf(x,lang), keys=[["máquina","movement"],["cristal","crystal"],["caja","case"]];
   $("trust").innerHTML=keys.map(function(k){ var r=sp.filter(function(r){return k.indexOf(String(r[0]).toLowerCase())>=0})[0];
     return r?'<div><b>'+esc(r[1])+'</b><span>'+esc(r[0])+'</span></div>':'' }).join("");
@@ -713,7 +718,7 @@ function renderProduct(){
   $("engWrap").hidden=!EXTRAS.some(function(z){return z.eng&&picked[z.id]});
   $("engBoxWrap").hidden=!EXTRAS.some(function(z){return z.engBox&&picked[z.id]});
 }
-function renderCart(){
+function renderCart(){ setTimeout(ppUpdate,0);
   var r=$("rows"); r.innerHTML="";
   if(!cart.length) r.innerHTML='<div class="empty pad">'+T[lang].empty+'</div>';
   cart.forEach(function(c,i){ var x=c.b?{name:T[lang].bName}:CAT.models.filter(function(z){return z.id===c.id})[0]; if(!x) return;
@@ -811,7 +816,7 @@ function renderBuild(){
   ch.slice(1).forEach(function(p){ var i=bImg(p); h+=i?'<img src="'+i+'" alt="">':'<span class="noimg">—</span>' });
   $("bPrev").innerHTML=h+'</div>';
   var u=bUnit(), full=ADJ?bChosen().concat(bIncl()).reduce(function(a,p){return a+(+p.price||0)},0):0;
-  $("bPrice").innerHTML=money(u)+(ADJ<0&&full?'<s class="was">'+money(r9(full)+EXTRAS.filter(function(e){return B.x[e.id]}).reduce(function(a,e){return a+e.price},0))+'</s>':'');
+  setTimeout(ppUpdate,0); $("bPrice").innerHTML=money(u)+(ADJ<0&&full?'<s class="was">'+money(r9(full)+EXTRAS.filter(function(e){return B.x[e.id]}).reduce(function(a,e){return a+e.price},0))+'</s>':'');
   renderBMine();
 }
 $("bMinus").onclick=function(){ $("bQty").value=Math.max(1,(parseInt($("bQty").value)||1)-1) };
@@ -821,6 +826,40 @@ $("bAdd").onclick=function(){ var parts=bCats().map(function(c){return B.sel[c]}
   var xs=EXTRAS.filter(function(e){return B.x[e.id]}), xo={}; xs.forEach(function(e){ if(e.opts&&e.opts.length) xo[e.id]=B.xo[e.id]||e.opts[0] });
   cart.push({b:true,id:"build",parts:parts,po:po,qty:Math.max(1,parseInt($("bQty").value)||1),unit:bUnit(),extras:xs.map(function(e){return e.id}),xo:xo,eng:"",engBox:""});
   renderCart(); flash(T[lang].added); $("bAdd").textContent="✓ "+T[lang].added; setTimeout(function(){$("bAdd").textContent=T[lang].bAdd},1600) };
+
+/* ================= PAYPAL ================= */
+Object.assign(T.es,{ppH:"Paga con PayPal",ppNote:"Paga ahora con PayPal o en cuotas con Paga después. El envío se confirma por WhatsApp. Llena tu nombre y teléfono arriba antes de pagar.",ppNeed:"Escribe tu nombre y teléfono antes de pagar.",ppOk:"¡Pago recibido! Número de PayPal:",ppWa:"Enviar mi pedido por WhatsApp",ppErr:"No se pudo completar el pago. Intenta de nuevo o escríbenos por WhatsApp.",ppPaid:"PAGADO CON PAYPAL"});
+Object.assign(T.en,{ppH:"Pay with PayPal",ppNote:"Pay now with PayPal or in installments with Pay Later. Shipping is confirmed on WhatsApp. Fill in your name and phone above before paying.",ppNeed:"Enter your name and phone before paying.",ppOk:"Payment received! PayPal ID:",ppWa:"Send my order on WhatsApp",ppErr:"The payment could not be completed. Try again or message us on WhatsApp.",ppPaid:"PAID WITH PAYPAL"});
+var PP_ID="BAA0WQhVjbYJtYy3VJi5Nj4oAfM12VDNarSGP0zFVrSMUjjS4dqpQ-v34ImI8ClWiubwoM-vaWLbHK5oQ4", PP=null, ppRendered=false;
+function cartTotal(){ return cart.reduce(function(a,c){return a+c.unit*c.qty},0) }
+function ppMsg(id,amt,place){ var el=$(id); if(!el) return; if(!PP||!PP.Messages||!(amt>0)){ el.innerHTML=""; return }
+  if(el.dataset.amt==String(amt)) return; el.dataset.amt=amt;
+  try{ PP.Messages({amount:amt,placement:place,style:{layout:"text",text:{size:13}}}).render(el) }catch(e){} }
+function ppUpdate(){
+  if(!PP) return;
+  var x=w(); ppMsg("ppMsgP",x?unitPrice():0,"product");
+  ppMsg("ppMsgB",(typeof bUnit==="function"&&!$("build").hidden)?bUnit():0,"product");
+  var tot=cartTotal(); ppMsg("ppMsgC",tot,"cart");
+  $("ppBox").hidden=!(tot>0)&&$("ppDone").hidden;
+  if(tot>0&&!ppRendered){ ppRendered=true; PP.Buttons({
+      style:{layout:"vertical",shape:"rect",label:"pay"},
+      onClick:function(d,actions){ if(!$("name").value.trim()||!$("phone").value.trim()){ flash(T[lang].ppNeed); $("name").focus(); return actions.reject() } return actions.resolve() },
+      createOrder:function(d,actions){ var tot=Math.round(cartTotal()*100)/100;
+        return actions.order.create({intent:"CAPTURE",purchase_units:[{description:("ARAMI Watches: "+cart.map(function(c){ var m=c.b?{name:T.es.bName}:(CAT.models.filter(function(z){return z.id===c.id})[0]||{name:"Reloj"}); return c.qty+"x "+m.name }).join(", ")).slice(0,127),
+          amount:{currency_code:"USD",value:tot.toFixed(2)}}],application_context:{shipping_preference:"GET_FROM_FILE",brand_name:"ARAMI Watches"}}) },
+      onApprove:function(d,actions){ return actions.order.capture().then(function(o){
+          var cap=(((o.purchase_units||[])[0]||{}).payments||{}).captures, txid=(cap&&cap[0]&&cap[0].id)||o.id;
+          var msg=buildMsg()+"\n\n✅ "+T[lang].ppPaid+": "+money(cartTotal())+" USD\nPayPal: "+txid;
+          try{ if(window.gtag) gtag("event","purchase",{transaction_id:txid,currency:"USD",value:cartTotal()}) }catch(e){}
+          var dn=$("ppDone"); dn.hidden=false; $("ppBtns").hidden=true;
+          dn.innerHTML='<b>'+esc(T[lang].ppOk)+' '+esc(txid)+'</b><a class="btn primary" target="_blank" rel="noopener" href="https://wa.me/'+(CAT.wa||"13054523548")+'?text='+encodeURIComponent(msg)+'">'+esc(T[lang].ppWa)+'</a>' }) },
+      onError:function(){ flash(T[lang].ppErr) }
+    }).render("#ppBtns").catch(function(){ ppRendered=false }) }
+}
+(function(){ if(!PP_ID) return; var sc=document.createElement("script");
+  sc.src="https://www.paypal.com/sdk/js?client-id="+encodeURIComponent(PP_ID)+"&currency=USD&intent=capture&components=buttons,messages&enable-funding=paylater";
+  sc.setAttribute("data-namespace","paypal_arami");
+  sc.onload=function(){ PP=window.paypal_arami||null; ppUpdate() }; document.head.appendChild(sc) })();
 applyLang();
 
 /* ================= OWNER MODE ================= */
