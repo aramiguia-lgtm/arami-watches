@@ -243,6 +243,10 @@ html{scroll-behavior:smooth}
 .ppbox{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
 #ppBtns{max-width:420px}
 .ppdone{background:var(--ice);border-radius:10px;padding:12px;font-size:15px;display:flex;flex-direction:column;gap:10px}
+#build{border-top:2px solid var(--lume);padding-top:22px}
+.beyebrow{display:block;font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--lume);margin-bottom:6px}
+#build h2.bhead{font-family:var(--display);font-weight:700;font-size:clamp(24px,7vw,34px);letter-spacing:.08em;line-height:1.2;color:var(--ink);text-transform:uppercase;margin:0 0 10px;text-wrap:balance}
+#build > .note{font-size:16px;color:var(--ink);opacity:.85;max-width:58ch}
 .dform{display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
 .dsteps{display:flex;flex-direction:column;gap:18px}
 .dstep{display:flex;flex-direction:column;gap:8px}
@@ -299,7 +303,7 @@ html{scroll-behavior:smooth}
         <button type="button" class="btn primary" id="add"></button>
       </div>
     </section>
-    <section id="build" hidden=""><h2 data-t="bH"></h2>
+    <section id="build" hidden=""><span class="beyebrow" data-t="bEye"></span><h2 class="bhead" data-t="bH"></h2>
       <p class="note" data-t="bLead" style="margin:0 0 12px"></p>
       <p class="ownprev" id="bOwn" data-t="bPrev"></p>
       <div class="dform" id="dForm" hidden="">
@@ -804,8 +808,8 @@ var DOPTS=[
  {k:"hands",es:"Manecillas",en:"Hands",multi:false,hint:{es:"Mercedes es el estilo de Rolex: la manecilla de la hora tiene un círculo con tres brazos.",en:"Mercedes is the Rolex style: the hour hand has a circle with three arms."},o:[["Finas (de vestir)","Slim (dress)"],["Gruesas","Bold"],["Deportivas con lume","Sport with lume"],["Mercedes (estilo Rolex)","Mercedes (Rolex style)"],["Catedral","Cathedral"],["Espada","Sword"]]},
  {k:"band",es:"Brazalete o correa",en:"Bracelet or strap",multi:false,o:[["Oyster (3 eslabones)","Oyster (3-link)"],["Jubilee (5 eslabones)","Jubilee (5-link)"],["President","President"],["Malla milanesa","Milanese mesh"],["Goma","Rubber"],["Cuero","Leather"],["NATO / tela","NATO / fabric"]]}
 ];
-Object.assign(T.es,{dLead:"Cuéntanos cómo lo quieres: elige el estilo de la caja, el material, la esfera, las manecillas y el brazalete. Te respondemos por WhatsApp con las opciones y el precio.",dEngL:"Texto para grabar en la tapa (opcional)",dNotesL:"¿Algo más? Colores, una foto de referencia que te guste, el tamaño de tu muñeca…",dWaT:"Pedir cotización por WhatsApp",dAfter:"No pagas nada todavía: primero te mandamos la cotización.",dSumH:"Tu reloj",dNone:"Elige al menos una opción.",dMsg:"Hola ARAMI, quiero armar mi reloj:",dEng:"Grabado",dNotes:"Notas",dName:"Nombre"});
-Object.assign(T.en,{dLead:"Tell us how you want it: choose the case style, material, dial, hands and bracelet. We reply on WhatsApp with options and the price.",dEngL:"Caseback engraving text (optional)",dNotesL:"Anything else? Colors, a reference photo you like, your wrist size…",dWaT:"Get a quote on WhatsApp",dAfter:"You pay nothing yet: we send you the quote first.",dSumH:"Your watch",dNone:"Choose at least one option.",dMsg:"Hi ARAMI, I want to build my watch:",dEng:"Engraving",dNotes:"Notes",dName:"Name"});
+Object.assign(T.es,{bEye:"Personalizado · hecho en Miami",dLead:"Cuéntanos cómo lo quieres: elige el estilo de la caja, el material, la esfera, las manecillas y el brazalete. Te respondemos por WhatsApp con las opciones y el precio.",dEngL:"Texto para grabar en la tapa (opcional)",dNotesL:"¿Algo más? Colores, una foto de referencia que te guste, el tamaño de tu muñeca…",dWaT:"Pedir cotización por WhatsApp",dAfter:"No pagas nada todavía: primero te mandamos la cotización.",dSumH:"Tu reloj",dNone:"Elige al menos una opción.",dMsg:"Hola ARAMI, quiero armar mi reloj:",dEng:"Grabado",dNotes:"Notas",dName:"Nombre"});
+Object.assign(T.en,{bEye:"Custom · made in Miami",dLead:"Tell us how you want it: choose the case style, material, dial, hands and bracelet. We reply on WhatsApp with options and the price.",dEngL:"Caseback engraving text (optional)",dNotesL:"Anything else? Colors, a reference photo you like, your wrist size…",dWaT:"Get a quote on WhatsApp",dAfter:"You pay nothing yet: we send you the quote first.",dSumH:"Your watch",dNone:"Choose at least one option.",dMsg:"Hi ARAMI, I want to build my watch:",dEng:"Engraving",dNotes:"Notes",dName:"Name"});
 var DSEL={};
 function formMode(){ return (CAT.ui||{}).build!=="parts" }
 function dLines(l){ return DOPTS.filter(function(g){return DSEL[g.k]!=null}).map(function(g){ return [g[l],g.o[DSEL[g.k]][l==="es"?0:1]] }) }
