@@ -243,6 +243,15 @@ html{scroll-behavior:smooth}
 .ppbox{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
 #ppBtns{max-width:420px}
 .ppdone{background:var(--ice);border-radius:10px;padding:12px;font-size:15px;display:flex;flex-direction:column;gap:10px}
+.dform{display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.dsteps{display:flex;flex-direction:column;gap:18px}
+.dstep{display:flex;flex-direction:column;gap:8px}
+.dstep .dh{display:flex;gap:8px;align-items:baseline}
+.dstep .dn{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.dstep .dhint{font-size:13px;color:var(--muted);margin:0}
+.dsum{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.dsum b{color:var(--ink)}
+#dWa{align-self:flex-start}
 .confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
 @media (prefers-reduced-motion:no-preference){.w,.btn,.chip{transition:border-color .15s,background .15s,color .15s}}
 </style>
@@ -293,7 +302,16 @@ html{scroll-behavior:smooth}
     <section id="build" hidden=""><h2 data-t="bH"></h2>
       <p class="note" data-t="bLead" style="margin:0 0 12px"></p>
       <p class="ownprev" id="bOwn" data-t="bPrev"></p>
-      <div class="bwrap">
+      <div class="dform" id="dForm" hidden="">
+        <div id="dSteps" class="dsteps"></div>
+        <div class="f"><label for="dEng" data-t="dEngL"></label><input type="text" id="dEng" maxlength="40"></div>
+        <div class="f"><label for="dNotes" data-t="dNotesL"></label><textarea id="dNotes" rows="3"></textarea></div>
+        <div class="f"><label for="dName" data-t="fname"></label><input type="text" id="dName" autocomplete="name"></div>
+        <div class="dsum" id="dSum"></div>
+        <a class="btn primary" id="dWa" href="#" target="_blank" rel="noopener" data-t="dWaT"></a>
+        <span class="note" data-t="dAfter"></span>
+      </div>
+      <div class="bwrap" id="bWrap">
         <div class="bprev" id="bPrev"></div>
         <div class="info">
           <div id="bSteps" class="opts"></div>
@@ -502,6 +520,7 @@ Crystal: Sapphire"></textarea></div>
     <section><h2>Página de inicio</h2>
       <div class="card">
         <label class="chk"><input type="checkbox" id="uHero"><span>Usar la bienvenida nueva (“Tu reloj automático, armado a tu gusto”)</span></label>
+        <label class="chk"><input type="checkbox" id="uParts"><span>“Arma tu reloj” por piezas con precio (si no, el cliente lo describe y pide cotización)</span></label>
         <label class="chk"><input type="checkbox" id="uAbout"><span>Mostrar la sección “Sobre ARAMI” (garantía, entrega y devoluciones)</span></label>
         <p class="note">Si desmarcas una opción y publicas, la página vuelve a como estaba antes.</p>
         <div class="row"><button type="button" class="btn primary" id="uSave">Guardar y publicar</button></div>
@@ -773,6 +792,43 @@ Object.assign(T.en,{abH:"About ARAMI",
  ab3t:"1-year warranty",ab3:"Covers the movement and any assembly defect for one year from delivery. It does not cover impacts, drops, water damage from misuse, or normal wear of the strap or case.",
  ab4t:"Delivery time",ab4:"3 to 6 weeks from order confirmation. In-person delivery in Miami is free, shipping anywhere in the US is $15, and we quote international shipping on WhatsApp.",
  ab5t:"Returns",ab5:"You have 7 days from receiving a collection model to return it, unworn and in its box. “Build your watch” pieces and engraved watches are personalized and can't be returned, but they do carry the 1-year warranty."});
+
+/* ================= ARMA TU RELOJ (descripción) ================= */
+var DOPTS=[
+ {k:"style",es:"Estilo de caja",en:"Case style",multi:false,o:[["Buceo","Diver"],["Deportivo","Sport"],["Elegante / de vestir","Dress"],["Piloto","Pilot"],["GMT / de viaje","GMT / travel"],["Cronógrafo","Chronograph"],["Robusto tipo Tuna","Rugged Tuna"]]},
+ {k:"mat",es:"Material de la caja",en:"Case material",multi:false,o:[["Acero 316L","316L steel"],["Acero 904L","904L steel"],["Titanio","Titanium"],["Fibra de carbono","Carbon fiber"]]},
+ {k:"ccol",es:"Color de la caja",en:"Case color",multi:false,o:[["Plateado","Silver"],["Negro","Black"],["Dorado","Gold"],["Oro rosa","Rose gold"],["Bicolor","Two-tone"]]},
+ {k:"bezel",es:"Bisel",en:"Bezel",multi:false,o:[["Liso","Smooth"],["Estriado","Fluted"],["Giratorio de buceo","Rotating diver"],["GMT de 24 horas","24-hour GMT"]]},
+ {k:"dcol",es:"Color de la esfera",en:"Dial color",multi:false,o:[["Negro","Black"],["Azul","Blue"],["Blanco","White"],["Verde","Green"],["Gris","Gray"],["Champán","Champagne"],["Rosa","Pink"],["Otro (en notas)","Other (in notes)"]]},
+ {k:"dfun",es:"Funciones de la esfera",en:"Dial functions",multi:false,o:[["Sin fecha","No date"],["Fecha","Date"],["Día de la semana y fecha","Day and date"]]},
+ {k:"hands",es:"Manecillas",en:"Hands",multi:false,hint:{es:"Mercedes es el estilo de Rolex: la manecilla de la hora tiene un círculo con tres brazos.",en:"Mercedes is the Rolex style: the hour hand has a circle with three arms."},o:[["Finas (de vestir)","Slim (dress)"],["Gruesas","Bold"],["Deportivas con lume","Sport with lume"],["Mercedes (estilo Rolex)","Mercedes (Rolex style)"],["Catedral","Cathedral"],["Espada","Sword"]]},
+ {k:"band",es:"Brazalete o correa",en:"Bracelet or strap",multi:false,o:[["Oyster (3 eslabones)","Oyster (3-link)"],["Jubilee (5 eslabones)","Jubilee (5-link)"],["President","President"],["Malla milanesa","Milanese mesh"],["Goma","Rubber"],["Cuero","Leather"],["NATO / tela","NATO / fabric"]]}
+];
+Object.assign(T.es,{dLead:"Cuéntanos cómo lo quieres: elige el estilo de la caja, el material, la esfera, las manecillas y el brazalete. Te respondemos por WhatsApp con las opciones y el precio.",dEngL:"Texto para grabar en la tapa (opcional)",dNotesL:"¿Algo más? Colores, una foto de referencia que te guste, el tamaño de tu muñeca…",dWaT:"Pedir cotización por WhatsApp",dAfter:"No pagas nada todavía: primero te mandamos la cotización.",dSumH:"Tu reloj",dNone:"Elige al menos una opción.",dMsg:"Hola ARAMI, quiero armar mi reloj:",dEng:"Grabado",dNotes:"Notas",dName:"Nombre"});
+Object.assign(T.en,{dLead:"Tell us how you want it: choose the case style, material, dial, hands and bracelet. We reply on WhatsApp with options and the price.",dEngL:"Caseback engraving text (optional)",dNotesL:"Anything else? Colors, a reference photo you like, your wrist size…",dWaT:"Get a quote on WhatsApp",dAfter:"You pay nothing yet: we send you the quote first.",dSumH:"Your watch",dNone:"Choose at least one option.",dMsg:"Hi ARAMI, I want to build my watch:",dEng:"Engraving",dNotes:"Notes",dName:"Name"});
+var DSEL={};
+function formMode(){ return (CAT.ui||{}).build!=="parts" }
+function dLines(l){ return DOPTS.filter(function(g){return DSEL[g.k]!=null}).map(function(g){ return [g[l],g.o[DSEL[g.k]][l==="es"?0:1]] }) }
+function dMsgText(){ var L=T[lang], t=L.dMsg+"\n"; dLines(lang).forEach(function(r){ t+="\n• "+r[0]+": "+r[1] });
+  var e=$("dEng").value.trim(), n=$("dNotes").value.trim(), nm=$("dName").value.trim();
+  if(e) t+="\n• "+L.dEng+': "'+e+'"'; if(n) t+="\n\n"+L.dNotes+": "+n; if(nm) t+="\n"+L.dName+": "+nm; return t }
+function renderForm(){
+  $("dForm").hidden=false; $("bWrap").hidden=true; $("bOwn").hidden=true;
+  document.querySelector('#build [data-t="bLead"]').textContent=T[lang].dLead;
+  var st=$("dSteps"); st.innerHTML="";
+  DOPTS.forEach(function(g,gi){ var d=document.createElement("div"); d.className="dstep";
+    d.innerHTML='<div class="dh"><span class="dn">'+(gi+1)+'</span><span class="lbl">'+esc(g[lang])+'</span></div>'+(g.hint?'<p class="dhint">'+esc(g.hint[lang])+'</p>':'');
+    var c=document.createElement("div"); c.className="chips"; c.setAttribute("role","group"); c.setAttribute("aria-label",g[lang]);
+    g.o.forEach(function(o,oi){ var b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=o[lang==="es"?0:1]; b.setAttribute("aria-pressed",DSEL[g.k]===oi);
+      b.onclick=function(){ DSEL[g.k]=DSEL[g.k]===oi?null:oi; renderForm() }; c.appendChild(b) });
+    d.appendChild(c); st.appendChild(d) });
+  dUpdate() }
+function dUpdate(){ var ls=dLines(lang);
+  $("dSum").innerHTML=ls.length?'<b>'+esc(T[lang].dSumH)+':</b> '+ls.map(function(r){return esc(r[1])}).join(" · "):esc(T[lang].dNone);
+  $("dWa").href="https://wa.me/"+(CAT.wa||"13054523548")+"?text="+encodeURIComponent(dMsgText()) }
+["dEng","dNotes","dName"].forEach(function(id){ $(id).oninput=dUpdate });
+$("dWa").addEventListener("click",function(ev){ if(!dLines(lang).length){ ev.preventDefault(); $("dSum").textContent=T[lang].dNone; return }
+  try{ if(window.gtag) gtag("event","generate_lead",{method:"arma_tu_reloj"}) }catch(e){} });
 var BUILD=CAT.build||{parts:[]}, BCATS=["caja","esfera","manecillas","correa"], B={sel:{},opt:{},x:{},xo:{}};
 function bPart(id){ return (BUILD.parts||[]).filter(function(p){return p.id===id})[0] }
 function bParts(c){ return (BUILD.parts||[]).filter(function(p){return p.cat===c&&(+p.price>0)}) }
@@ -787,6 +843,8 @@ function bDesc(c){ return (c.parts||[]).map(function(id){ var p=bPart(id); retur
 function bShown(){ return !!BUILD.on||(OWNER&&ss.get("arami-unlocked")==="1") }
 function renderBuild(){
   var sec=$("build"); if(!sec) return;
+  if(formMode()){ sec.hidden=false; var hb0=$("heroBuild"); if(hb0) hb0.hidden=false; renderForm(); return }
+  $("dForm").hidden=true; $("bWrap").hidden=false;
   var vis=bShown()&&bParts("caja").length>0; sec.hidden=!vis; var hb=$("heroBuild"); if(hb) hb.hidden=!vis; if(!vis) return;
   $("bOwn").hidden=!!BUILD.on;
   BCATS.forEach(function(c){ var ps=bParts(c); if(!ps.some(function(p){return p.id===B.sel[c]})) B.sel[c]=ps[0]?ps[0].id:null });
@@ -1034,8 +1092,8 @@ function initAdmin(){
   $("promoText").oninput=function(){ $("promoWa").href="https://wa.me/?text="+encodeURIComponent($("promoText").value) };
   $("sAdj").value=ADJ; showAdj();
   $("sAdj").oninput=showAdj;
-  var UI0=CAT.ui||{}; $("uHero").checked=UI0.hero!==false; $("uAbout").checked=UI0.about!==false;
-  $("uSave").onclick=function(){ var cat=clone(CAT); cat.ui={hero:$("uHero").checked,about:$("uAbout").checked}; publishCat(cat,$("uStatus")) };
+  var UI0=CAT.ui||{}; $("uHero").checked=UI0.hero!==false; $("uAbout").checked=UI0.about!==false; $("uParts").checked=UI0.build==="parts";
+  $("uSave").onclick=function(){ var cat=clone(CAT); cat.ui={hero:$("uHero").checked,about:$("uAbout").checked,build:$("uParts").checked?"parts":"form"}; publishCat(cat,$("uStatus")) };
   $("sSave").onclick=function(){ var cat=clone(CAT); cat.adj=+$("sAdj").value; if(!cat.adj) delete cat.adj; publishCat(cat,$("sStatus")) };
   $("sReset").onclick=function(){ $("sAdj").value=0; showAdj(); if(ADJ){ var cat=clone(CAT); delete cat.adj; publishCat(cat,$("sStatus")) } };
   $("aPinSave").onclick=function(){ var a=$("aPinNew").value.trim(), b=$("aPinNew2").value.trim(), m=$("aPinMsg");
